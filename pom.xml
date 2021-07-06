@@ -9,8 +9,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<checkstyle.config.location>google_checks.xml</checkstyle.config.location>
 		<start-class>de.tiramon.du.map.DuMapCompanion</start-class>
-		<fx.version>17-ea+7</fx.version>
-	
+		
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
@@ -24,12 +23,6 @@
 			<version>1.4.17</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-graphics</artifactId>
-			<version>${fx.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
