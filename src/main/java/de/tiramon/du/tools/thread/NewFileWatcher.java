@@ -1,5 +1,6 @@
 package de.tiramon.du.tools.thread;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -53,7 +54,10 @@ public class NewFileWatcher implements Runnable {
 	@Override
 	public void run() {
 		log.info("LogFileWatcher started");
-
+		File logFolderFile = logFolder.toFile();
+		if (!logFolderFile.exists() || !logFolderFile.isDirectory()) {
+			throw new RuntimeException("Dual Universe log folder '" + logFolderFile.getAbsolutePath() + "' does not exist");
+		}
 		try {
 			Thread.sleep(500);
 
@@ -90,7 +94,7 @@ public class NewFileWatcher implements Runnable {
 	}
 
 	private Path getNewestLogfile() throws IOException {
-		return Files.list(logFolder).max((p1, p2) -> {
+		return Files.list(logFolder).filter(f -> f.endsWith(".xml")).max((p1, p2) -> {
 			try {
 				FileTime t1 = Files.getLastModifiedTime(p1);
 				FileTime t2 = Files.getLastModifiedTime(p2);
@@ -99,10 +103,12 @@ public class NewFileWatcher implements Runnable {
 				e.printStackTrace();
 				return -1;
 			}
-		}).orElseGet(null);
+		}).orElse(null);
 	}
 
 	public void stop() {
-		folderKey.cancel();
+		if (folderKey != null) {
+			folderKey.cancel();
+		}
 	}
 }

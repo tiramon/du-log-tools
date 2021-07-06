@@ -12,11 +12,21 @@ public class ThreadInitializer {
 	private static Thread fileWatcherThread;
 
 	public static void initThreads(IHandleService handlerService, IMethodEnumConverter methodEnumConverter, Properties properties) {
+		Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				stopThreads();
+				e.printStackTrace();
+				System.exit(-1);
+			}
+		};
 		fileReader = new FileReader(handlerService, methodEnumConverter, properties);
 
 		newFileWatcher = new NewFileWatcher(fileReader.getQueue(), properties, handlerService);
 
 		fileReaderThread = new Thread(fileReader, "FileReader");
+		fileReaderThread.setUncaughtExceptionHandler(h);
 		fileReaderThread.start();
 		try {
 			Thread.sleep(100);
@@ -24,6 +34,7 @@ public class ThreadInitializer {
 			throw new RuntimeException(e);
 		}
 		fileWatcherThread = new Thread(newFileWatcher, "FileWatcher");
+		fileWatcherThread.setUncaughtExceptionHandler(h);
 		fileWatcherThread.start();
 	}
 
