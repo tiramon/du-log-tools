@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.tiramon.du.tools.exception.NoDuLogFolderException;
 import de.tiramon.du.tools.service.IHandleService;
 
 public class NewFileWatcher implements Runnable {
@@ -56,7 +57,7 @@ public class NewFileWatcher implements Runnable {
 		log.info("LogFileWatcher started");
 		File logFolderFile = logFolder.toFile();
 		if (!logFolderFile.exists() || !logFolderFile.isDirectory()) {
-			throw new RuntimeException("Dual Universe log folder '" + logFolderFile.getAbsolutePath() + "' does not exist");
+			throw new NoDuLogFolderException("Dual Universe log folder '" + logFolderFile.getAbsolutePath() + "' does not exist");
 		}
 		try {
 			Thread.sleep(500);
