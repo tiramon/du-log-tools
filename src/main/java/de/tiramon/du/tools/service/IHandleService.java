@@ -16,4 +16,5 @@ public interface IHandleService {
 
 	public void setLastEntryRead(long timestamp);
 
+	public void setBacklogCount(long size);
 }

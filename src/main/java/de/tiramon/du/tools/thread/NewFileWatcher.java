@@ -82,7 +82,7 @@ public class NewFileWatcher implements Runnable {
 
 					Path newLogFile = Paths.get(logFolder.toString(), affectedFile.toString());
 					log.info("new file {}", newLogFile);
-					handleService.setCurrentLogfileName(newLogFile);
+					this.queue.add(newLogFile);
 				}
 				key.reset();
 			}

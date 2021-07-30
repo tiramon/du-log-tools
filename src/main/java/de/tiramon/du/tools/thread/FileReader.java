@@ -54,12 +54,13 @@ public class FileReader implements Runnable {
 		while (true) {
 			while (pathQueue.isEmpty()) {
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			Path path = pathQueue.remove(0);
+			handleService.setBacklogCount(pathQueue.size());
 			log.info("new log file {}", path);
 			readFile(path);
 		}
@@ -100,6 +101,7 @@ public class FileReader implements Runnable {
 		String line;
 		List<String> lineBuffer = new ArrayList<>();
 		long start = System.currentTimeMillis();
+		handleService.setCurrentLogfileName(path);
 		try (BufferedReader br = Files.newBufferedReader(path)) {
 			if (skipToEnd) {
 				log.info("skipping");
