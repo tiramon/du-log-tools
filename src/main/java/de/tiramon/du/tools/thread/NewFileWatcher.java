@@ -95,7 +95,7 @@ public class NewFileWatcher implements Runnable {
 	}
 
 	private Path getNewestLogfile() throws IOException {
-		return Files.list(logFolder).filter(f -> f.endsWith(".xml")).max((p1, p2) -> {
+		return Files.list(logFolder).filter(f -> f.toString().endsWith(".xml")).max((p1, p2) -> {
 			try {
 				FileTime t1 = Files.getLastModifiedTime(p1);
 				FileTime t2 = Files.getLastModifiedTime(p2);

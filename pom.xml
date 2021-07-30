@@ -7,8 +7,6 @@
   <properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<checkstyle.config.location>google_checks.xml</checkstyle.config.location>
-		<start-class>de.tiramon.du.map.DuMapCompanion</start-class>
 		
 		<java.version>11</java.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
