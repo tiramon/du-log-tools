@@ -2,6 +2,7 @@ package de.tiramon.du.tools.thread;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.ClosedWatchServiceException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,6 +53,8 @@ public class NewFileWatcher implements Runnable {
 		}
 	}
 
+	WatchService watchService;
+
 	@Override
 	public void run() {
 		log.info("LogFileWatcher started");
@@ -62,7 +65,7 @@ public class NewFileWatcher implements Runnable {
 		try {
 			Thread.sleep(500);
 
-			WatchService watchService = FileSystems.getDefault().newWatchService();
+			watchService = FileSystems.getDefault().newWatchService();
 			folderKey = logFolder.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
 			log.info("registered DU log folder {}", logFolder);
 			Path logFile = getNewestLogfile();
@@ -91,6 +94,8 @@ public class NewFileWatcher implements Runnable {
 			throw new RuntimeException(e);
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
+		} catch (ClosedWatchServiceException e) {
+
 		}
 	}
 
@@ -110,6 +115,12 @@ public class NewFileWatcher implements Runnable {
 	public void stop() {
 		if (folderKey != null) {
 			folderKey.cancel();
+		}
+		try {
+			watchService.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

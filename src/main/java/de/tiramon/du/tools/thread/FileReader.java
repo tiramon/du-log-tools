@@ -51,7 +51,7 @@ public class FileReader implements Runnable {
 	public void run() {
 		log.info("FileReader started");
 		setupXStream();
-		while (true) {
+		while (!shutdown) {
 			while (pathQueue.isEmpty()) {
 				try {
 					Thread.sleep(5000);
