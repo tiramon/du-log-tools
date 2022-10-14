@@ -107,9 +107,11 @@ public class FileReader implements Runnable {
 		}
 		String line;
 		List<String> lineBuffer = new ArrayList<>();
-		long start = System.currentTimeMillis();
+		// long start = System.currentTimeMillis();
 		handleService.setCurrentLogfileName(path);
-		try (BufferedReader br = Files.newBufferedReader(path)) {
+		// skip non utf8 characters ... had this once in a NQ logfile
+		CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.IGNORE);
+		try (Reader reader = new InputStreamReader(Files.newInputStream(path), decoder); BufferedReader br = new BufferedReader(reader)) {
 			if (skipToEnd) {
 				log.info("skipping");
 				long skip = Long.MAX_VALUE;
