@@ -39,11 +39,13 @@ public class ThreadInitializer {
 	}
 
 	public static void stopThreads() {
+		// log.info("stoping threads");
 		if (newFileWatcher != null) {
 			newFileWatcher.stop();
 		}
 		if (fileReader != null) {
 			fileReader.stop();
 		}
+
 	}
 }

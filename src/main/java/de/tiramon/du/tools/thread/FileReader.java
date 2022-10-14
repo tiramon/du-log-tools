@@ -3,7 +3,12 @@ package de.tiramon.du.tools.thread;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.Reader;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -40,6 +45,8 @@ public class FileReader implements Runnable {
 	private boolean skipToEnd;
 
 	private IMethodEnumConverter methodEnumConverter;
+
+	private long lasttimestmap = -1L;
 
 	public FileReader(IHandleService handleService, IMethodEnumConverter methodEnumConverter, Properties properties) {
 		this.handleService = handleService;
@@ -120,7 +127,7 @@ public class FileReader implements Runnable {
 			}
 			log.info("start interpreting entries");
 			while (true) {
-				long lastModified = path.toFile().lastModified();
+				// long lastModified = path.toFile().lastModified();
 				// if (lastModified < System.currentTimeMillis() - 30 * 1000) {
 				// log.info("stop reading file, because it wasn't changed for 30s");
 				// return;
@@ -158,30 +165,22 @@ public class FileReader implements Runnable {
 
 						try {
 							record = mapToRecord(lineBuffer);
-
 						} catch (com.thoughtworks.xstream.converters.ConversionException e) {
 							// System.out.println(convert(lineBuffer));
 						}
 						if (record != null) {
-							final long timestamp = record.millis;
-							handleService.setLastEntryRead(timestamp);
+							handleService.setLastEntryRead(record.millis);
+							lasttimestmap = record.millis;
 						}
-						if (record != null && record.method != null) {
 
+						this.handleService.incrementAnalyzedLines();
+						if (record != null && record.method != null) {
+							// publish record for further processing
 							this.handleService.handle(record);
 						}
-						// addAvgReadPerRecord(System.currentTimeMillis() - start);
-						// publish record for further processing
-
-						start = System.currentTimeMillis();
-						// publishRecord(record);
-						// addAvgProcessPerRecord(System.currentTimeMillis() - start);
 
 						// clear buffer to start new entry
 						lineBuffer.clear();
-
-						start = System.currentTimeMillis();
-
 					} else {
 						// if not end of record add to buffer for later parsing
 						lineBuffer.add(line);
@@ -190,6 +189,7 @@ public class FileReader implements Runnable {
 			}
 		} catch (Exception e) {
 			System.err.println(convert(lineBuffer));
+			System.err.println("Last entry read: " + lasttimestmap);
 			handleService.setWorking(false);
 			throw new RuntimeException(e);
 		}
